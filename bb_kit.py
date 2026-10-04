@@ -458,6 +458,9 @@ def lookup(argv, usage, installed=None):
 def build_hermes(argv):
     home = os.path.expanduser("~")
     hermes = os.environ.get("HERMES_HOME") or os.path.join(home, ".hermes")
+    # Run from inside a Hermes bot, HERMES_HOME is that bot's own folder. Install next to it instead.
+    if os.path.basename(os.path.dirname(os.path.normpath(hermes))) == "profiles":
+        hermes = os.path.dirname(os.path.dirname(os.path.normpath(hermes)))
     if not os.path.isdir(hermes): fail("Hermes not found at %s. Install Hermes first." % hermes)
     ident, _, _ = lookup(argv, "install-bot.command yourname.agent [--token N]", installed_bots(hermes))
     b, m = ident["bot"], ident["meta"]
@@ -466,7 +469,7 @@ def build_hermes(argv):
 
     # Register with Hermes rather than only making a folder, so it shows up in the bot list.
     if shutil.which("hermes"):
-        subprocess.run(["hermes", "profile", "create", ident["slug"]], capture_output=True)
+        subprocess.run(["hermes", "profile", "create", ident["slug"]], capture_output=True, env=dict(os.environ, HERMES_HOME=hermes))
     for sub in ("memories", "skills/recall", "genie"): os.makedirs(os.path.join(d, sub), exist_ok=True)
     say("Building %s ..." % ident["slug"])
 

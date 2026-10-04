@@ -18,6 +18,10 @@ $HERMES = $env:HERMES_HOME
 if (-not $HERMES) {
   foreach ($c in "$env:LOCALAPPDATA\hermes", "$env:USERPROFILE\.hermes") { if (Test-Path "$c\profiles") { $HERMES = $c; break } }
 }
+# Run from inside a Hermes bot, HERMES_HOME is that bot's own folder. Install next to it instead.
+if ($HERMES -and (Split-Path -Leaf (Split-Path -Parent $HERMES.TrimEnd('\', '/'))) -eq 'profiles') {
+  $HERMES = Split-Path -Parent (Split-Path -Parent $HERMES.TrimEnd('\', '/'))
+}
 if (-not $HERMES -or -not (Test-Path $HERMES)) { Fail 'Hermes not found. Install Hermes Desktop for Windows first.' }
 
 # The name is its own bot. A forged Builder Bot is installed only when asked for with --token.
@@ -45,7 +49,10 @@ $DIR = Join-Path $HERMES "profiles\$($id.Slug)"
 if (Test-Path $DIR) { Fail "  $($id.Slug) is already in Hermes. Delete it first to reinstall." }
 
 # Register with Hermes rather than only making a folder, so it shows up in the bot list.
-if (Get-Command hermes -ErrorAction SilentlyContinue) { try { & hermes profile create $id.Slug *> $null } catch { } }
+if (Get-Command hermes -ErrorAction SilentlyContinue) {
+  $oldHome = $env:HERMES_HOME; $env:HERMES_HOME = $HERMES
+  try { & hermes profile create $id.Slug *> $null } catch { } finally { $env:HERMES_HOME = $oldHome }
+}
 foreach ($d in 'memories', 'skills\recall', 'genie') { New-Item -ItemType Directory -Force (Join-Path $DIR $d) | Out-Null }
 
 Say "Building $($id.Slug) ..."
