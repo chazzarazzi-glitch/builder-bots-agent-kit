@@ -2,8 +2,8 @@
 
 Turns your .agent name into a working AI agent in Hermes, Claude Code, Codex, Cursor or Antigravity.
 
-- Own a forged Builder Bot? You get that bot, with its traits.
-- Own only a .agent name? You get a name bot under that name.
+- Your .agent name becomes your bot.
+- Hold a forged Builder Bot and want that one instead? Add its number: "Install Builder Bot #207 for yourname.agent".
 
 ## Easiest: ask your AI
 

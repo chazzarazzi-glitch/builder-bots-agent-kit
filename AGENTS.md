@@ -12,9 +12,10 @@ You are being asked to install a Builder Bot agent for someone who owns a .agent
    Windows (PowerShell):
        & ([scriptblock]::Create((irm https://raw.githubusercontent.com/chazzarazzi-glitch/builder-bots-agent-kit/main/install.ps1))) NAME.agent
 
+   The .agent name itself becomes the bot. Do not ask which Builder Bot to use.
    If Hermes is installed, the bot is added to Hermes. If not, a bot folder is built instead.
    To force a bot folder for Claude Code, Codex, Cursor or Antigravity, add  --folder
-   If it says the wallet holds several bots, run it again with  --token  and the number they pick.
+   Only if they ask for a forged Builder Bot by its number, add  --token  and that number.
 
 3. Tell them what it printed, in plain words. If it installed into Hermes, tell them to restart Hermes.
 

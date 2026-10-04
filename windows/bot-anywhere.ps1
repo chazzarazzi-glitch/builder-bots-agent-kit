@@ -20,7 +20,14 @@ if ($prompted) { $kit.Name = Read-AgentNamePrompt 'bot-anywhere' }
 $label = Get-AgentLabel $kit.Name
 $where = if ($kit.Rest.Count) { $kit.Rest[0] } elseif ($prompted) { [Environment]::GetFolderPath('Desktop') } else { (Get-Location).Path }
 
-$found = @(Find-BotsForName $label)
+# The name is its own bot. A forged Builder Bot is installed only when asked for with --token.
+if ($kit.Token) { $found = @(Find-BotsForName $label) }
+else {
+  Say "Looking up $label.agent on Robinhood Chain..."
+  $script:NameRegistered = [bool](Resolve-AgentName $label)
+  if ($script:NameRegistered) { Say '  name found' } else { Say "  $label.agent is not registered on Robinhood Chain. Installing it anyway." }
+  $found = @()
+}
 if ($found.Count) {
   $bot  = Select-Bot $found $kit.Token
   if ($bot) { Say "  forged bot: $($bot.Collection) #$($bot.Token)" }

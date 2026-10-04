@@ -429,7 +429,7 @@ def parse_args(argv):
 def ask_for_name(command):
     """Double-clicked or run with no name: ask for it, rather than printing a usage line."""
     print("\nBuilder Bots Agent Kit\n----------------------")
-    print("Your bot is found by your .agent name, forged at xearn.com/agent.\n")
+    print("Your .agent name becomes your bot. To install a forged Builder Bot instead, run it again with --token and its number.\n")
     try: name = input("Your .agent name (for example  yourname.agent ): ").strip()
     except EOFError: name = ""
     if not name: fail("Nothing entered. You can also run:  %s yourname.agent" % command)
@@ -440,6 +440,12 @@ def lookup(argv, usage, installed=None):
     prompted = not name
     if prompted: name = ask_for_name(usage.split()[0])
     label = agent_label(name)
+    if not token:
+        # The name is its own bot. A forged Builder Bot is installed only when asked for with --token.
+        say("Looking up %s.agent on Robinhood Chain..." % label)
+        registered = bool(resolve_name(label))
+        say("  name found" if registered else "  %s.agent is not registered on Robinhood Chain. Installing it anyway." % label)
+        return name_identity(label, registered), rest, prompted
     bots = find_bots_for_name(label)
     if bots is None: return name_identity(label, registered=False), rest, prompted
     if not bots: return name_identity(label), rest, prompted
